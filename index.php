@@ -18,7 +18,7 @@
 
 
 
-    <div class="container">
+<div class="container">
         <h1 class="my-4">Lista degli Hotel</h1>
         
         <!-- Form di filtro -->
@@ -29,12 +29,16 @@
                     Solo hotel con parcheggio
                 </label>
             </div>
+            <div class="form-group">
+                <label for="vote">Voto minimo</label>
+                <input type="number" class="form-control" name="vote" id="vote" value="<?php echo isset($_GET['vote']) ? $_GET['vote'] : ''; ?>" min="1" max="5">
+            </div>
             <button type="submit" class="btn btn-primary">Filtra</button>
         </form>
         
 
-        <!-- Per chiamare e importare il file .php che contiene gli hotel dentro l'index -->
-        <?php include __DIR__ .'src/hotels.php'; ?>
+        <!-- Collegamento a Hotels.php -->
+        <?php include __DIR__ . '/src/hotels.php'; ?>
 
 
 
@@ -50,11 +54,19 @@
             </thead>
             <tbody>
                 <?php
-                // Filtra gli hotel in base alla disponibilità del parcheggio
+                // Filtra gli hotel in base alla disponibilità del parcheggio e al voto
                 $filteredHotels = $hotels;
+
                 if (isset($_GET['parking'])) {
-                    $filteredHotels = array_filter($hotels, function($hotel) {
+                    $filteredHotels = array_filter($filteredHotels, function($hotel) {
                         return $hotel['parking'];
+                    });
+                }
+
+                if (isset($_GET['vote']) && is_numeric($_GET['vote'])) {
+                    $minVote = intval($_GET['vote']);
+                    $filteredHotels = array_filter($filteredHotels, function($hotel) use ($minVote) {
+                        return $hotel['vote'] >= $minVote;
                     });
                 }
 
